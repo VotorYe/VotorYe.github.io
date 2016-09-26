@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>全排列非递归实现 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="上次写了全排列的递归实现，简单分析了下时间和空间复杂度。元素个数比较多的时候递归实现的开销导致它几乎没有实用性了吧。学习过一些前辈总结的非递归实现后，觉得有必要把它记录下来。这里尽量讲清楚些，也算是对自己文字表达能力的训练吧。
+全排列概念：给定n个元素，输出所有不同的排列情况。
+非递归原理找到全排列中字典序最小的一个排列，然后找到字典序只比当前排列大的下一个排列，依次查找下去，一直到没有新的排列大">
+<meta property="og:type" content="article">
+<meta property="og:title" content="全排列非递归实现">
+<meta property="og:url" content="http://yoursite.com/2016/09/26/全排列非递归实现/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="上次写了全排列的递归实现，简单分析了下时间和空间复杂度。元素个数比较多的时候递归实现的开销导致它几乎没有实用性了吧。学习过一些前辈总结的非递归实现后，觉得有必要把它记录下来。这里尽量讲清楚些，也算是对自己文字表达能力的训练吧。
+全排列概念：给定n个元素，输出所有不同的排列情况。
+非递归原理找到全排列中字典序最小的一个排列，然后找到字典序只比当前排列大的下一个排列，依次查找下去，一直到没有新的排列大">
+<meta property="og:updated_time" content="2016-09-26T08:39:46.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="全排列非递归实现">
+<meta name="twitter:description" content="上次写了全排列的递归实现，简单分析了下时间和空间复杂度。元素个数比较多的时候递归实现的开销导致它几乎没有实用性了吧。学习过一些前辈总结的非递归实现后，觉得有必要把它记录下来。这里尽量讲清楚些，也算是对自己文字表达能力的训练吧。
+全排列概念：给定n个元素，输出所有不同的排列情况。
+非递归原理找到全排列中字典序最小的一个排列，然后找到字典序只比当前排列大的下一个排列，依次查找下去，一直到没有新的排列大">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-全排列非递归实现" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/26/全排列非递归实现/" class="article-date">
+  <time datetime="2016-09-26T08:30:07.000Z" itemprop="datePublished">2016-09-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      全排列非递归实现
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上次写了全排列的递归实现，简单分析了下时间和空间复杂度。元素个数比较多的时候递归实现的开销导致它几乎没有实用性了吧。学习过一些前辈总结的非递归实现后，觉得有必要把它记录下来。这里尽量讲清楚些，也算是对自己文字表达能力的训练吧。</p>
+<h4 id="全排列概念："><a href="#全排列概念：" class="headerlink" title="全排列概念："></a>全排列概念：</h4><p>给定n个元素，输出所有不同的排列情况。</p>
+<h4 id="非递归原理"><a href="#非递归原理" class="headerlink" title="非递归原理"></a>非递归原理</h4><p>找到全排列中字典序最小的一个排列，然后找到字典序<strong>只</strong>比当前排列大的下一个排列，依次查找下去，一直到没有新的排列大于当前排列。</p>
+<h4 id="非递归实现算法"><a href="#非递归实现算法" class="headerlink" title="非递归实现算法"></a>非递归实现算法</h4><p>这里用一个int数组作为例子辅助说明。<br>[4, 6, 7, 2, 3, 1, 9]</p>
+<ol>
+<li>对数组进行升序排序。  得到全排列中字典序最小的一个排列：[1, 2, 3, 4 ,6, 7, 9]</li>
+<li>从后往前遍历，找到从最后一个元素往前最大的升序子串。假设该子串为 [k, n - 1]，那么也可以理解为k到n-1是递减的。<ul>
+<li>如果k == 0，就例子而言，是这样的：[9, 7, 6, 4, 3, 2, 1]。那么其实我们已经找到字典序最大的一个排列，可以结束查找了。</li>
+<li>如果k &gt; 0，比方说[1, 2, 3, 4, 9, 7, 6]，k = 5（值是9）。显然还有字典序更大的排列，转3</li>
+</ul>
+</li>
+<li>将[k, n - 1]区间中大于arr[k - 1]的数中最小的一个与 k - 1 位置的数对换，比方说[1, 2, 3, 4, 9, 7, 6] 变成了 [1, 2, 3, 6, 9, 7, 4]，这里6是区间中满足条件的数。再将区间[k, n -1]做升序排列，变成[1, 2, 3, 6, 4, 7, 9]。<br>这里[1, 2, 3, 4, 9, 7, 6] 的下一个排列就是[1, 2, 3, 6, 4, 7, 9]。</li>
+<li>重复2，3直到k == 0。</li>
+</ol>
+<h4 id="对算法的简单推理和证明"><a href="#对算法的简单推理和证明" class="headerlink" title="对算法的简单推理和证明"></a>对算法的简单推理和证明</h4><p>由于我们是从字典序最小的排列开始，一直到字典序最大的排列结束。那么我们只要证明：上面这个算法，它对一个排列，每次总是能得到字典序<strong>只</strong>比当前排列大的一个新的排列。就可以证明它的完备性了。<br>依然用[1, 2, 3, 4, 9, 7, 6] 辅助讲解。<br>对于这样的一个区间，我们把它划分成3个大区间。<br>A = [1, 2, 3]，  arr[0]~arr[k - 2]<br>B = [4]，  arr[k - 1]<br>C = [9, 7, 6]， arr[k]~arr[n -1]<br>C 代表从最后一个元素往前数最大的升序子串[k, n - 1]，B 是区间[k, n - 1]左边那个数–&gt;arr[k - 1]， A 是 [0, k - 2]。A，B，C串起来是完整的一个排列。</p>
+<p>再令到 D = B + C = [4, 9, 7, 6]，区间[k - 1, n - 1]。注意A和D串起来跟A，B, C串起来是同一个排列。</p>
+<p>那么我们通过算法中的步骤2，找到D这个区间。<br>现在我们先来证明为什么只需要调整D区间，不需要调整A区间就能获得一个比原排列大的排列。<br>D区间中，第一个数是arr[k - 1]，我们总能在C区间中找到至少一个数arr[k+i]，比arr[k - 1]要大。那么把arr[k+i]与arr[k - 1]对调的话，就能在D区间上得到一个更大的排列。<br>为什么不能调整到A区间的元素呢？因为我们希望得到更大的字典序，所以只能对A调整使得A这一部分的字典序大于它原来的排列。但这种方式得到的排列，字典序必然大于只调整D区间的元素，这里读者自己简单推理下就明白了。<br>就例子而言：我们希望得到的排列是这样的 ：[1, 2, 3, ?, ?, ?, ? ] ，？号备选的数是：4, 6, 7, 9</p>
+<p>然后来证明为何将C区间中的比arr[k - 1]大的数中的最小的一个与arr[k - 1]对调。<br>下面请时刻注意arr[k - 1]是D区间的开头，并且通常说到“排列”二字，是A区间不变，对D区间进行调整的排列。<br>D区间的元素可以分为3种类型，顺便说明下哪种类型能放到arr[k - 1]这个位置</p>
+<ol>
+<li>小于arr[k - 1]的元素，这部分元素中的任一个调整到D区间的开头，得到的排列（D区间）都是比arr[k - 1]开头的排列要小的。不用考虑了。</li>
+<li>等于arr[k - 1]的元素，注意我们是怎么找到C区间的，就可以知道D区间当前的排列其实是以arr[k - 1]开头的排列中最大的一个，不存在A不变，D区间以arr[k - 1]开头的更大的排列。</li>
+<li>大于arr[k - 1]的元素，如果是希望找到最接近原排列的下一个排列，当然是找这其中最小的一个元素放到arr[k - 1]上啦。就例子来说，这个数是[6]，<br>就例子而言：我们希望得到的排列是这样的：[1, 2, 3, 6, ?, ?, ?]，？号备选的数是：4, 7 , 9</li>
+</ol>
+<p>现在我们已经把范围缩小到一定程度了。（其实你往前回顾可以看到我一直在缩小可能的区间，使得候选的排列越来越少，并且他们总是最接近原排列的）。<br>很显然只要把备选的部分[4, 7, 9]作升序排列并到尾部，就可以得到以[1, 2, 3, 6]开头的最小的排列了。<br>最后结果就是[1, 2, 3, 6, 4, 7, 9]。是字典序大于[1, 2, 3, 4, 9, 7, 6]的排列中最小的一个。</p>
+<p>证毕。</p>
+<h4 id="上代码"><a href="#上代码" class="headerlink" title="上代码"></a>上代码</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_arr</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; arr, <span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++) &#123;</div><div class="line">		<span class="built_in">cout</span> &lt;&lt; arr[i] &lt;&lt; <span class="string">" "</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> n;</div><div class="line">	<span class="keyword">int</span> i, k;</div><div class="line">	<span class="keyword">int</span> tem;</div><div class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arr;</div><div class="line">	<span class="keyword">while</span> (<span class="built_in">cin</span> &gt;&gt; n) &#123;</div><div class="line">		arr.resize(n);</div><div class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</div><div class="line">			<span class="built_in">cin</span> &gt;&gt; arr[i];</div><div class="line"></div><div class="line">		sort(arr.begin(), arr.end());</div><div class="line">		print_arr(arr, n);</div><div class="line">		<span class="keyword">while</span> (<span class="literal">true</span>) &#123;</div><div class="line">			<span class="keyword">for</span> (k = n - <span class="number">2</span>; k &gt;= <span class="number">0</span>; k--) &#123;</div><div class="line">				<span class="keyword">if</span> (arr[k] &lt; arr[k + <span class="number">1</span>]) &#123;</div><div class="line">					<span class="keyword">break</span>;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">if</span> (k &lt; <span class="number">0</span>) &#123;</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="comment">// k &gt; 0</span></div><div class="line">			k += <span class="number">1</span>;  <span class="comment">//   左开右闭区间 --&gt; (k, n - 1]递减，改为左闭右闭区间 --&gt;[k, n - 1]递减</span></div><div class="line"></div><div class="line">			<span class="comment">// 找到[k, n - 1]区间中大于 arr[k - 1]的数中，最小的一个</span></div><div class="line">			<span class="keyword">for</span> (i = n - <span class="number">1</span>; i &gt;= k; i--) &#123;</div><div class="line">				<span class="keyword">if</span> (arr[i] &gt; arr[k - <span class="number">1</span>]) &#123;</div><div class="line">					<span class="keyword">break</span>;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			swap(arr[k - <span class="number">1</span>], arr[i]);		<span class="comment">// 交换</span></div><div class="line"></div><div class="line">			<span class="comment">// 逆序 [k, n - 1]，使得它递增</span></div><div class="line">			<span class="keyword">for</span> (i = k; i &lt;= (k + (n - <span class="number">1</span> - k) / <span class="number">2</span>); i++) &#123;</div><div class="line">				swap(arr[i], arr[n - <span class="number">1</span> + k - i]);</div><div class="line">			&#125;;</div><div class="line"></div><div class="line">			print_arr(arr, n);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="对比和分析"><a href="#对比和分析" class="headerlink" title="对比和分析"></a>对比和分析</h4><p>注意到非递归求全排列，是不会出现重复的排列的。</p>
+<p>非递归实现全排列：<br>空间复杂度：O(n!)<br>时间复杂度：O(？) &lt;  O(n!n) 说实话这种情况我不会求，先给个范围，做个记号，后面回来修改。<br>为什么小于 O(n!n)呢？找到最长递减序列，最坏的情况也不过是最后一个数到第一个 –&gt; O(n)，逆序也是O(n)。何况并不总是这样，因此不会超过O(n!n)。</p>
+<p>递归实现全排列：<br>空间复杂度：O(n!)<br>时间复杂度：O(n!nlogn) 去重的情况</p>
+<p>非递归没有函数栈，这个优势是很巨大的，同时理论时间复杂度更小。是一种更好的求全排列的方法。</p>
+<p>终。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/26/全排列非递归实现/" data-id="citjsphgp00052khdtryk5y2k" class="article-share-link">Delen</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/全排列/">全排列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/09/25/全排列递归实现/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">全排列递归实现</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Labels</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/KMP-字符串匹配-算法/">KMP 字符串匹配 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/first-try/">first try</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/京东笔试/">京东笔试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全排列/">全排列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/KMP-字符串匹配-算法/" style="font-size: 10px;">KMP 字符串匹配 算法</a> <a href="/tags/first-try/" style="font-size: 10px;">first try</a> <a href="/tags/京东笔试/" style="font-size: 10px;">京东笔试</a> <a href="/tags/全排列/" style="font-size: 15px;">全排列</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/09/26/全排列非递归实现/">全排列非递归实现</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/25/全排列递归实现/">全排列递归实现</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/16/KMP算法/">KMP算法</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/16/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/06/京东笔试编程题：烽火台-动态规划解法/">京东笔试编程题：烽火台,动态规划解法</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
