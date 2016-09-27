@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -60,6 +60,50 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-二叉树后序遍历非递归实现" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/27/二叉树后序遍历非递归实现/" class="article-date">
+  <time datetime="2016-09-27T01:14:34.000Z" itemprop="datePublished">2016-09-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/09/27/二叉树后序遍历非递归实现/">二叉树后序遍历非递归实现</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>二叉树的遍历有递归实现的方式，前中后序遍历都非常直观易懂，缺点是递归始终是个开销可观的操作。非递归实现二叉树遍历不太易懂，尤其是后序遍历，这里把它记录下来以后回顾用。</p>
+<p>二叉树后序遍历概念：对任一节点，它的左孩子总是先于它的右孩子被遍历到，它的右孩子总是先于该节点被遍历到。即是：左右中的顺序进行遍历。</p>
+<h4 id="算法和原理"><a href="#算法和原理" class="headerlink" title="算法和原理"></a>算法和原理</h4><p>感觉上看代码注释就能很好理解，树这种结构文字很难表述清楚。待我找到一个好的工具来画图，再看看能不能表达清楚～-～。建议读者自己在纸上模拟一次过程就能理解精髓了。主要是对二叉查找树的性质要够熟悉，其次对栈有基本的理解（先入后出）。</p>
+<h4 id="上代码"><a href="#上代码" class="headerlink" title="上代码"></a>上代码</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stack&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">"Header.h"</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// 二叉树插入的操作</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(Node&lt;<span class="keyword">int</span>&gt;* root, <span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> (root-&gt;val == value) &#123;	<span class="comment">// 拒绝重复的值</span></div><div class="line"></div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (root-&gt;val &gt; value) &#123;	<span class="comment">// value在root左子树</span></div><div class="line">		<span class="keyword">if</span> (root-&gt;left == <span class="literal">NULL</span>) &#123;	<span class="comment">// root没有左子树，直接加一个节点</span></div><div class="line">			root-&gt;left = <span class="keyword">new</span> Node&lt;<span class="keyword">int</span>&gt;();</div><div class="line">			root-&gt;left-&gt;val = value;</div><div class="line">			root-&gt;left-&gt;right = root-&gt;left-&gt;left = <span class="literal">NULL</span>;</div><div class="line">			<span class="keyword">return</span>;</div><div class="line">		&#125;</div><div class="line">		insert(root-&gt;left, value);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (root-&gt;val &lt; value) &#123;   <span class="comment">// value在root右子树</span></div><div class="line">		<span class="keyword">if</span> (root-&gt;right == <span class="literal">NULL</span>) &#123;	<span class="comment">// root没有右子树，直接加一个节点</span></div><div class="line">			root-&gt;right = <span class="keyword">new</span> Node&lt;<span class="keyword">int</span>&gt;();</div><div class="line">			root-&gt;right-&gt;val = value;</div><div class="line">			root-&gt;right-&gt;right = root-&gt;right-&gt;left = <span class="literal">NULL</span>;</div><div class="line">			<span class="keyword">return</span>;</div><div class="line">		&#125;</div><div class="line">		insert(root-&gt;right, value);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">	Node&lt;<span class="keyword">int</span>&gt;* root;			<span class="comment">// 根节点</span></div><div class="line">	Node&lt;<span class="keyword">int</span>&gt;* tem;</div><div class="line">	Node&lt;<span class="keyword">int</span>&gt;* pre = <span class="literal">NULL</span>;      <span class="comment">// pre 用来保存上一次弹出的节点的地址</span></div><div class="line">	<span class="built_in">stack</span>&lt;Node&lt;<span class="keyword">int</span>&gt;*&gt; sta;		<span class="comment">// 使用栈先入后出的特性来模拟遍历</span></div><div class="line">	<span class="keyword">int</span> n;</div><div class="line">	<span class="keyword">int</span> value;</div><div class="line"></div><div class="line">	<span class="keyword">while</span> (<span class="built_in">cin</span> &gt;&gt; n) &#123;</div><div class="line">		<span class="built_in">cin</span> &gt;&gt; value;</div><div class="line">		root = <span class="keyword">new</span> Node&lt;<span class="keyword">int</span>&gt;();</div><div class="line">		root-&gt;val = value;</div><div class="line">		root-&gt;right = root-&gt;left = <span class="literal">NULL</span>;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; n; i++) &#123;			<span class="comment">// 输入一串数字，按逐个插入的原则，建二叉查找树，自己在纸上模拟下建个树更好理解</span></div><div class="line">			<span class="built_in">cin</span> &gt;&gt; value;</div><div class="line">			insert(root, value);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">while</span> (!sta.empty()) sta.pop();		<span class="comment">// 清空栈</span></div><div class="line">		sta.push(root);</div><div class="line">		pre = root;			<span class="comment">// 这里将pre初始化为root，防止pre被更新前，任一节点的左右孩子之一是空导致判断复杂化。自己体会下</span></div><div class="line">		<span class="keyword">while</span> (!sta.empty()) &#123;</div><div class="line">			tem = sta.top();</div><div class="line">			<span class="keyword">if</span> (tem-&gt;left == pre || tem-&gt;right == pre || (!tem-&gt;left &amp;&amp; !tem-&gt;right)) &#123;	<span class="comment">// 如果一个节点没有左右子节点，那么它作为根直接输出</span></div><div class="line">				sta.pop();																<span class="comment">// 如果它的左或右节点已经出过栈，说明它的左右子树都遍历过了，那么它也可以出栈了</span></div><div class="line">				<span class="built_in">cout</span> &lt;&lt; tem-&gt;val &lt;&lt; <span class="string">" "</span>;												<span class="comment">//  |</span></div><div class="line">				pre = tem;																<span class="comment">//  ↓</span></div><div class="line">			&#125;																			<span class="comment">// 否则将它的左右节点入栈，刚好压在它头上。</span></div><div class="line">			<span class="keyword">else</span> &#123;																		<span class="comment">// 这就保证了如果一个节点root的左/右节点弹出（说明左右子树都遍历过了），那么当栈顶是root时，pre存的必然是它们之一。</span></div><div class="line">				<span class="keyword">if</span> (tem-&gt;right) &#123;			<span class="comment">// 先压入右节点，当然根节点是在右节点之前被压入过了。</span></div><div class="line">					sta.push(tem-&gt;right);</div><div class="line">				&#125;</div><div class="line">				<span class="keyword">if</span> (tem-&gt;left) &#123;			<span class="comment">// 再压入左节点</span></div><div class="line">					sta.push(tem-&gt;left);</div><div class="line">				&#125;							<span class="comment">// 那就保证在出栈时，是按照左右中的顺序</span></div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h4><p><strong>时间复杂度：</strong><br>O(n)  每个节点入栈一次出栈一次2n，没有额外的循环，常数去掉</p>
+<p><strong>空间复杂度：</strong>平均O(logn)   最坏O(n)  取决于二叉树的高度，如果是平衡二叉树那么就是O(logn)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/27/二叉树后序遍历非递归实现/" data-id="citlmoov40001lkhdta4vanrw" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树遍历/">二叉树遍历</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-全排列非递归实现" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -118,7 +162,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/09/26/全排列非递归实现/" data-id="citjsphgp00052khdtryk5y2k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/09/26/全排列非递归实现/" data-id="citlmoovf0009lkhdx9z8c0uz" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/全排列/">全排列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
@@ -163,7 +207,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/09/25/全排列递归实现/" data-id="citjsphh5000d2khdw8nw6vwj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/09/25/全排列递归实现/" data-id="citlmoovf0004lkhdqlazyotw" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/全排列/">全排列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
@@ -203,7 +247,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/09/16/KMP算法/" data-id="citjsphfu00002khdhxouvvab" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/09/16/KMP算法/" data-id="citlmoouy0000lkhd9eoivcag" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/KMP-字符串匹配-算法/">KMP 字符串匹配 算法</a></li></ul>
@@ -250,7 +294,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/09/16/hello-world/" data-id="citjsphga00012khdzmvlke8d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/09/16/hello-world/" data-id="citlmoovf0008lkhd4c81ayzf" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -291,7 +335,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/09/06/京东笔试编程题：烽火台-动态规划解法/" data-id="citjsphga00042khdpzi1tz79" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/09/06/京东笔试编程题：烽火台-动态规划解法/" data-id="citlmoovc0003lkhdzrf0jm1p" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/京东笔试/">京东笔试</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
@@ -331,7 +375,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/09/06/My-New-Post/" data-id="citjsphga00032khdehbipr0y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/09/06/My-New-Post/" data-id="citlmoovf0005lkhdrycln3f5" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/first-try/">first try</a></li></ul>
@@ -353,9 +397,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/KMP-字符串匹配-算法/">KMP 字符串匹配 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/first-try/">first try</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/京东笔试/">京东笔试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全排列/">全排列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/KMP-字符串匹配-算法/">KMP 字符串匹配 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/first-try/">first try</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树/">二叉树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/二叉树遍历/">二叉树遍历</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/京东笔试/">京东笔试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全排列/">全排列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li></ul>
     </div>
   </div>
 
@@ -363,9 +407,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/KMP-字符串匹配-算法/" style="font-size: 10px;">KMP 字符串匹配 算法</a> <a href="/tags/first-try/" style="font-size: 10px;">first try</a> <a href="/tags/京东笔试/" style="font-size: 10px;">京东笔试</a> <a href="/tags/全排列/" style="font-size: 15px;">全排列</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a>
+      <a href="/tags/KMP-字符串匹配-算法/" style="font-size: 10px;">KMP 字符串匹配 算法</a> <a href="/tags/first-try/" style="font-size: 10px;">first try</a> <a href="/tags/二叉树/" style="font-size: 10px;">二叉树</a> <a href="/tags/二叉树遍历/" style="font-size: 10px;">二叉树遍历</a> <a href="/tags/京东笔试/" style="font-size: 10px;">京东笔试</a> <a href="/tags/全排列/" style="font-size: 15px;">全排列</a> <a href="/tags/算法/" style="font-size: 20px;">算法</a>
     </div>
   </div>
 
@@ -382,9 +426,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/09/27/二叉树后序遍历非递归实现/">二叉树后序遍历非递归实现</a>
+          </li>
         
           <li>
             <a href="/2016/09/26/全排列非递归实现/">全排列非递归实现</a>
@@ -402,10 +450,6 @@
             <a href="/2016/09/16/hello-world/">Hello World</a>
           </li>
         
-          <li>
-            <a href="/2016/09/06/京东笔试编程题：烽火台-动态规划解法/">京东笔试编程题：烽火台,动态规划解法</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -419,7 +463,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2016 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
